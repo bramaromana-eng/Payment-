@@ -92,3 +92,13 @@ app.get('/admin/sms-log', adminAuth, (req, res) => res.json(db.getSMSLog()));
 app.listen(PORT, () => {
   console.log(`✅ MatulMada Server miasa — port ${PORT}`);
 });
+
+// KEEPALIVE — tsy hatory ny Render
+const https = require('https');
+setInterval(() => {
+  https.get('https://payment-0w70.onrender.com', (res) => {
+    console.log('Keepalive ping:', res.statusCode);
+  }).on('error', (e) => {
+    console.log('Keepalive error:', e.message);
+  });
+}, 14 * 60 * 1000); // isaky ny 14 minitra
