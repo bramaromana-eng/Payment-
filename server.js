@@ -23,7 +23,7 @@ function adminAuth(req, res, next) {
 }
 
 app.get('/', (req, res) => {
-  res.json({ message: 'MatulMada Server miasa!', version: '1.0.0', status: 'ok' });
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 app.post('/api/orders', (req, res) => {
