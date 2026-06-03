@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatulMada — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;
+  --amber:#BA7517;--amber-light:#FAEEDA;--red:#A32D2D;--red-light:#FCEBEB;
+  --gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#E9ECEF;--gray-300:#DEE2E6;
+  --gray-500:#868E96;--gray-700:#495057;--gray-900:#212529;--white:#FFFFFF;
+  --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--gray-50);color:var(--gray-900);}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:40px;width:380px;}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;justify-content:center;}
+.logo-mark{width:40px;height:40px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;}
+.login-title{font-size:20px;font-weight:600;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--gray-500);margin-bottom:24px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:11px;font-weight:600;color:var(--gray-700);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;}
+.form-input{width:100%;padding:10px 14px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none;transition:border .15s;}
+.form-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(29,158,117,.1);}
+.form-select{width:100%;padding:10px 14px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);outline:none;background:var(--white);}
+.btn{padding:11px 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:var(--font);display:inline-flex;align-items:center;gap:8px;}
+.btn-primary{background:var(--green);color:white;width:100%;justify-content:center;}
+.btn-primary:hover{background:var(--green-dark);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-success{background:var(--green-light);color:var(--green-dark);}
+.btn-danger{background:var(--red-light);color:var(--red);}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700);}
+.err{color:var(--red);font-size:13px;margin-top:8px;display:none;}
+
+/* APP */
+.app{display:none;}
+nav{background:var(--white);border-bottom:1px solid var(--gray-200);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo span{font-size:15px;font-weight:600;}
+.nav-logo span em{color:var(--green);font-style:normal;}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.online-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;}
+.nav-info{font-size:13px;color:var(--gray-500);}
+.btn-logout{font-size:12px;padding:6px 12px;background:var(--gray-100);border:none;border-radius:6px;cursor:pointer;color:var(--gray-700);}
+
+.main{padding:24px 28px;}
+.page{display:none;}.page.active{display:block;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--gray-100);padding:4px;border-radius:var(--radius-sm);width:fit-content;}
+.tab{padding:7px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--gray-500);transition:all .15s;}
+.tab.active{background:var(--white);color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-md);padding:16px 18px;}
+.stat-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.stat-val{font-size:22px;font-weight:600;font-family:var(--mono);}
+.stat-badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-top:5px;}
+.bg-green{background:var(--green-light);color:var(--green-dark);}
+.bg-amber{background:var(--amber-light);color:var(--amber);}
+.bg-red{background:var(--red-light);color:var(--red);}
+.bg-gray{background:var(--gray-100);color:var(--gray-700);}
+
+/* TABLE */
+.table-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;}
+.table-header{padding:14px 18px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-size:14px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{padding:9px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.07em;background:var(--gray-50);border-bottom:1px solid var(--gray-200);}
+td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--gray-100);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--gray-50);}
+.tx-id{font-family:var(--mono);font-size:11px;color:var(--gray-500);}
+.mono{font-family:var(--mono);font-weight:600;}
+.status{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.04em;}
+.status-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.s-pending{background:var(--amber-light);color:var(--amber);}
+.s-success{background:var(--green-light);color:var(--green-dark);}
+.s-rejected{background:var(--red-light);color:var(--red);}
+.actions{display:flex;gap:6px;}
+
+/* SMS DETAIL */
+.sms-text{font-size:11px;color:var(--gray-500);font-family:var(--mono);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* WEBHOOK CONFIG */
+.config-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:22px;margin-bottom:20px;}
+.config-title{font-size:14px;font-weight:600;margin-bottom:16px;}
+.code-block{background:var(--gray-900);color:#A8FF78;padding:16px;border-radius:var(--radius-sm);font-family:var(--mono);font-size:12px;line-height:1.7;overflow-x:auto;margin-bottom:12px;}
+.copy-btn{font-size:11px;padding:5px 10px;background:var(--gray-100);border:none;border-radius:5px;cursor:pointer;font-family:var(--font);}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--gray-900);color:white;padding:11px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;}
+.toast.show{transform:none;opacity:1;}
+
+/* REFRESH */
+.refresh-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;color:var(--gray-500);}
+.refresh-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">MM</div>
+      <span style="font-size:18px;font-weight:700;">MatulMada</span>
+    </div>
+    <div style="text-align:center;">
+      <div class="login-title">Admin Panel</div>
+      <div class="login-sub">Connectez-vous pour gérer les transactions</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL du serveur</label>
+      <input class="form-input" id="server-url" placeholder="https://matulmada-xxx.railway.app" value="">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe admin</label>
+      <input class="form-input" type="password" id="admin-pwd" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">Connexion →</button>
+    <div class="err" id="login-err">URL ou mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <nav>
+    <div class="nav-logo">
+      <div class="logo-mark" style="width:32px;height:32px;font-size:12px;">MM</div>
+      <span>Matul<em>Mada</em> Admin</span>
+    </div>
+    <div class="nav-right">
+      <span class="online-dot"></span>
+      <span class="nav-info" id="server-display"></span>
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('orders',this)">Ordres</button>
+      <button class="tab" onclick="switchTab('config',this)">Configuration</button>
+    </div>
+
+    <!-- ORDERS PAGE -->
+    <div id="tab-orders" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">En attente</div>
+          <div class="stat-val" style="color:var(--amber);" id="s-pending">—</div>
+          <span class="stat-badge bg-amber">À traiter</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Validées</div>
+          <div class="stat-val" style="color:var(--green-dark);" id="s-success">—</div>
+          <span class="stat-badge bg-green">Succès</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total</div>
+          <div class="stat-val" id="s-total">—</div>
+          <span class="stat-badge bg-gray">Toutes</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Volume validé</div>
+          <div class="stat-val" style="color:var(--green-dark);" id="s-volume">—</div>
+          <span class="stat-badge bg-green">USD</span>
+        </div>
+      </div>
+
+      <div class="refresh-bar">
+        <span class="refresh-dot"></span>
+        Actualisation automatique toutes les 10 secondes
+        <button class="btn btn-secondary btn-sm" onclick="loadOrders()">Actualiser</button>
+        <select class="form-select" style="width:auto;padding:5px 10px;font-size:12px;" id="filter-status" onchange="loadOrders()">
+          <option value="">Tous les statuts</option>
+          <option value="pending">En attente</option>
+          <option value="success">Validées</option>
+          <option value="rejected">Rejetées</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Transactions</div>
+          <span id="order-count" style="font-size:12px;color:var(--gray-500);"></span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Client</th>
+              <th>Opérateur</th>
+              <th>Type</th>
+              <th>Montant USD</th>
+              <th>Montant MGA</th>
+              <th>SMS reçu</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--gray-500);">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONFIG PAGE -->
+    <div id="tab-config" class="page">
+      <div class="config-card">
+        <div class="config-title">Configuration SMS Forwarder (Android)</div>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Installez <strong>HTTP SMS</strong> na <strong>SMS Forwarder</strong> amin'ny Play Store, dia ametraho ity configuration ity:</p>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">URL Webhook</div>
+          <div class="code-block" id="webhook-url-display">https://SERVEUR_ANAO/webhook/sms</div>
+          <button class="copy-btn" onclick="copyText('webhook-url-display')">Copier</button>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">Headers</div>
+          <div class="code-block">x-secret: WEBHOOK_SECRET_ANAO
+Content-Type: application/json</div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">Body (JSON)</div>
+          <div class="code-block">{"from": "{sender}", "message": "{message}", "to": "{receiver}"}</div>
+        </div>
+
+        <div style="font-size:12px;color:var(--gray-500);">
+          Filtrer SMS avy amin'ny: <strong>ORANGE, MVola, Airtel, 1777, 1515</strong>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">Tester le webhook</div>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:16px;">Andramao ny webhook alohan'ny mampiasa amin'ny production:</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">Numéro expéditeur</div>
+            <input class="form-input" id="test-from" value="0341234567" placeholder="034XXXXXXX">
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">Opérateur</div>
+            <select class="form-select" id="test-operator">
+              <option value="orange">Orange Money</option>
+              <option value="mvola">Mvola</option>
+              <option value="airtel">Airtel</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">SMS simulé</div>
+          <input class="form-input" id="test-sms" value="Vous avez recu 50000 Ar de 0341234567. Ref: OM123456">
+        </div>
+
+        <button class="btn btn-secondary" onclick="testWebhook()">Envoyer SMS test →</button>
+        <div id="test-result" style="margin-top:12px;font-size:13px;display:none;"></div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-title">Exemples SMS reconnus</div>
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--green-dark);margin-bottom:4px;">Orange Money</div>
+            <div class="code-block" style="font-size:11px;">Vous avez recu 50000 Ar de 0341234567. Ref: OM2024110400001. Solde: 150000 Ar</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:4px;">Mvola</div>
+            <div class="code-block" style="font-size:11px;">Efa noraisina 50000 Ar avy amin'ny 0341234567. Ref MVL123456.</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--amber);margin-bottom:4px;">Airtel Money</div>
+            <div class="code-block" style="font-size:11px;">You have received 50000 MGA from 0321234567. Txn ID: AIR789012</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let SERVER_URL = '';
+let ADMIN_PWD = '';
+let refreshInterval = null;
+
+async function doLogin() {
+  SERVER_URL = document.getElementById('server-url').value.trim().replace(/\/$/, '');
+  ADMIN_PWD = document.getElementById('admin-pwd').value.trim();
+  if (!SERVER_URL || !ADMIN_PWD) { showErr('Fenoy ny fields rehetra'); return; }
+
+  try {
+    const r = await fetch(SERVER_URL + '/admin/stats', {
+      headers: { 'x-admin-password': ADMIN_PWD }
+    });
+    if (!r.ok) { showErr('Mot de passe diso na URL tsy mety'); return; }
+
+    localStorage.setItem('mm_server', SERVER_URL);
+    localStorage.setItem('mm_pwd', ADMIN_PWD);
+    startApp();
+  } catch(e) {
+    showErr('Tsy azo atody ny server — jereo ny URL');
+  }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('login-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function startApp() {
+  document.getElementById('login-wrap').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('server-display').textContent = SERVER_URL.replace('https://', '');
+  document.getElementById('webhook-url-display').textContent = SERVER_URL + '/webhook/sms';
+  loadOrders();
+  loadStats();
+  refreshInterval = setInterval(() => { loadOrders(); loadStats(); }, 10000);
+}
+
+function logout() {
+  clearInterval(refreshInterval);
+  localStorage.removeItem('mm_server');
+  localStorage.removeItem('mm_pwd');
+  document.getElementById('login-wrap').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+async function loadStats() {
+  try {
+    const r = await fetch(SERVER_URL + '/admin/stats', { headers: { 'x-admin-password': ADMIN_PWD } });
+    const d = await r.json();
+    document.getElementById('s-pending').textContent = d.pending;
+    document.getElementById('s-success').textContent = d.success;
+    document.getElementById('s-total').textContent = d.total;
+    document.getElementById('s-volume').textContent = d.volume.toFixed(2) + ' $';
+  } catch(e) {}
+}
+
+async function loadOrders() {
+  const status = document.getElementById('filter-status')?.value || '';
+  const url = SERVER_URL + '/admin/orders' + (status ? '?status=' + status : '');
+  try {
+    const r = await fetch(url, { headers: { 'x-admin-password': ADMIN_PWD } });
+    const orders = await r.json();
+    document.getElementById('order-count').textContent = orders.length + ' transaction(s)';
+    renderOrders(orders);
+  } catch(e) {}
+}
+
+function renderOrders(orders) {
+  if (!orders.length) {
+    document.getElementById('orders-tbody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--gray-500);">Tsy misy transaction</td></tr>';
+    return;
+  }
+  document.getElementById('orders-tbody').innerHTML = orders.map(o => {
+    const sc = o.status === 'success' ? 's-success' : o.status === 'pending' ? 's-pending' : 's-rejected';
+    const sl = o.status === 'success' ? 'Validé' : o.status === 'pending' ? 'En attente' : 'Rejeté';
+    const date = new Date(o.created_at).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const sms = o.sms_received ? `<span class="sms-text" title="${o.sms_received}">✓ ${o.sms_amount?.toLocaleString()} MGA</span>` : '<span style="color:var(--gray-300);font-size:12px;">—</span>';
+    const actions = o.status === 'pending' ? `
+      <div class="actions">
+        <button class="btn btn-success btn-sm" onclick="validateOrder(${o.id})">✓ Valider</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectOrder(${o.id})">✗</button>
+      </div>` : `<span style="font-size:12px;color:var(--gray-400);">—</span>`;
+    return `<tr>
+      <td class="tx-id">${o.ref}</td>
+      <td><div style="font-size:13px;font-weight:500;">${o.client_phone}</div><div style="font-size:11px;color:var(--gray-500);">${o.operator}</div></td>
+      <td style="font-size:13px;">${o.operator}</td>
+      <td><span style="font-size:12px;font-weight:600;color:${o.type==='depot'?'var(--green-dark)':'var(--red)'}">${o.type==='depot'?'↓ Dépôt':'↑ Retrait'}</span></td>
+      <td class="mono" style="color:var(--green-dark);">${o.amount_usd.toFixed(2)} $</td>
+      <td class="mono">${o.amount_mga.toLocaleString()} MGA</td>
+      <td>${sms}</td>
+      <td><span class="status ${sc}"><span class="status-dot"></span>${sl}</span></td>
+      <td style="font-size:12px;color:var(--gray-500);">${date}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function validateOrder(id) {
+  await fetch(SERVER_URL + '/admin/orders/' + id + '/validate', {
+    method: 'POST', headers: { 'x-admin-password': ADMIN_PWD }
+  });
+  showToast('Transaction validée ✓');
+  loadOrders(); loadStats();
+}
+
+async function rejectOrder(id) {
+  if (!confirm('Rejeter cette transaction?')) return;
+  await fetch(SERVER_URL + '/admin/orders/' + id + '/reject', {
+    method: 'POST', headers: { 'x-admin-password': ADMIN_PWD }
+  });
+  showToast('Transaction rejetée');
+  loadOrders(); loadStats();
+}
+
+async function testWebhook() {
+  const from = document.getElementById('test-from').value;
+  const sms = document.getElementById('test-sms').value;
+  const el = document.getElementById('test-result');
+  try {
+    const r = await fetch(SERVER_URL + '/webhook/sms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-secret': prompt('Saisir le webhook secret:') || '' },
+      body: JSON.stringify({ from, message: sms })
+    });
+    const d = await r.json();
+    el.style.display = 'block';
+    el.style.color = d.success ? 'var(--green-dark)' : 'var(--amber)';
+    el.textContent = d.success ? '✓ ' + d.message : '⚠ ' + d.message;
+  } catch(e) {
+    el.style.display = 'block';
+    el.style.color = 'var(--red)';
+    el.textContent = 'Erreur: ' + e.message;
+  }
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function copyText(id) {
+  navigator.clipboard.writeText(document.getElementById(id).textContent);
+  showToast('Copié !');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Auto-login raha efa niditra teo aloha
+window.onload = () => {
+  const s = localStorage.getItem('mm_server');
+  const p = localStorage.getItem('mm_pwd');
+  if (s && p) {
+    document.getElementById('server-url').value = s;
+    document.getElementById('admin-pwd').value = p;
+    SERVER_URL = s; ADMIN_PWD = p;
+    startApp();
+  }
+};
+</script>
+</body>
+</html>
